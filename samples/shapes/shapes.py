@@ -189,3 +189,23 @@ class ShapesDataset(utils.Dataset):
             np.array(boxes), np.arange(N), 0.3)
         shapes = [s for i, s in enumerate(shapes) if i in keep_ixs]
         return bg_color, shapes
+
+from mrcnn import visualize
+config = ShapesConfig()
+config.display()
+# Training dataset
+dataset_train = ShapesDataset()
+dataset_train.load_shapes(500, config.IMAGE_SHAPE[0], config.IMAGE_SHAPE[1])
+dataset_train.prepare()
+
+# Validation dataset
+dataset_val = ShapesDataset()
+dataset_val.load_shapes(50, config.IMAGE_SHAPE[0], config.IMAGE_SHAPE[1])
+dataset_val.prepare()
+
+# Load and display random samples
+image_ids = np.random.choice(dataset_train.image_ids, 4)
+for image_id in image_ids:
+    image = dataset_train.load_image(image_id)
+    mask, class_ids = dataset_train.load_mask(image_id)
+    visualize.display_top_masks(image, mask, class_ids, dataset_train.class_names)

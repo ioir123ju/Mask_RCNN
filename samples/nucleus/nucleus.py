@@ -13,16 +13,16 @@ Usage: import the module (see Jupyter notebooks for examples), or run from
        the command line as such:
 
     # Train a new model starting from ImageNet weights
-    python3 nucleus.py train --dataset=/path/to/dataset --subset=train --weights=imagenet
+    python3 agriculture.py train --dataset=/path/to/dataset --subset=train --weights=imagenet
 
     # Train a new model starting from specific weights file
-    python3 nucleus.py train --dataset=/path/to/dataset --subset=train --weights=/path/to/weights.h5
+    python3 agriculture.py train --dataset=/path/to/dataset --subset=train --weights=/path/to/weights.h5
 
     # Resume training a model that you had trained earlier
-    python3 nucleus.py train --dataset=/path/to/dataset --subset=train --weights=last
+    python3 agriculture.py train --dataset=/path/to/dataset --subset=train --weights=last
 
     # Generate submission file
-    python3 nucleus.py detect --dataset=/path/to/dataset --subset=train --weights=<last or /path/to/weights.h5>
+    python3 agriculture.py detect --dataset=/path/to/dataset --subset=train --weights=<last or /path/to/weights.h5>
 """
 
 # Set matplotlib backend
@@ -232,7 +232,11 @@ class NucleusDataset(utils.Dataset):
         mask = []
         for f in next(os.walk(mask_dir))[2]:
             if f.endswith(".png"):
+                import cv2
+                image1 = cv2.imread(os.path.join(mask_dir, f))
+
                 m = skimage.io.imread(os.path.join(mask_dir, f)).astype(np.bool)
+                print("33333333", m.ndim, m.shape, image1.shape)
                 mask.append(m)
         mask = np.stack(mask, axis=-1)
         # Return mask, and array of class IDs of each instance. Since we have
@@ -429,6 +433,7 @@ if __name__ == '__main__':
                         help="Subset of dataset to run prediction on")
     args = parser.parse_args()
 
+    os.environ["CUDA_VISIBLE_DEVICES"] = "1"
     # Validate arguments
     if args.command == "train":
         assert args.dataset, "Argument --dataset is required for training"

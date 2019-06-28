@@ -436,6 +436,7 @@ if __name__ == '__main__':
     print("Logs: ", args.logs)
     print("Auto Download: ", args.download)
 
+    os.environ["CUDA_VISIBLE_DEVICES"] = "1"
     # Configurations
     if args.command == "train":
         config = CocoConfig()
